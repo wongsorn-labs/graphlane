@@ -1,0 +1,17 @@
+{
+  "name": "graphlane",
+  "metadata": {
+    "description": "Self-hosted marketplace for the graphlane plugin — every agent stays in its lane."
+  },
+  "owner": {
+    "name": "wongsorn-labs",
+    "url": "https://github.com/wongsorn-labs"
+  },
+  "plugins": [
+    {
+      "name": "graphlane",
+      "source": "./",
+      "description": "Every agent stays in its lane. A fixed research -> design -> human approval -> build -> review pipeline for Claude Code subagents."
+    }
+  ]
+}
