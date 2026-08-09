@@ -112,11 +112,12 @@ mutation-tested the test suite itself against 11 hand-introduced bugs (killed 7,
 survivors as findings instead of hiding them). Full detail lands in `.mission/<slug>/review.md`
 and `artifacts.md`, alongside `brief.md`, `facts.md`, and `plan.md`.
 
-> **A real quirk this run surfaced:** the mission slug came out as `เพิ่มแฟลก` (a Thai word from
-> the goal text) instead of the `add-version-flag` token typed first. `$1`/`$ARGUMENTS`
-> substitution in `commands/mission.md` didn't resolve the way the template implies when invoked
-> non-interactively with mixed Thai/English text. Untested whether this also happens in an
-> interactive session — check before relying on the slug for anything beyond a folder name.
+> **A real bug this run surfaced (now fixed):** the mission slug first came out as `เพิ่มแฟลก` (a
+> Thai word from the goal text) instead of the `add-version-flag` token typed first. Root cause,
+> confirmed with an isolated debug command: Claude Code's `$1` positional substitution returns
+> the *second* whitespace-separated token, not the first — reproducible with plain ASCII, not
+> Thai-specific. `commands/mission.md` no longer uses `$1`; it has the model extract the slug from
+> `$ARGUMENTS` itself instead, which was correct in every test. See `CLAUDE.md` "Known gaps".
 
 ## How it maps to the graph
 

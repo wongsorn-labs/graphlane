@@ -108,6 +108,13 @@ Four principles, in priority order:
 - No tests for the hook scripts yet.
 - Not yet submitted to any marketplace beyond its own self-hosted one — installable today only
   via `/plugin marketplace add wongsorn-labs/graphlane` or `--plugin-dir`.
+- **Claude Code's `$1` positional-argument substitution is unreliable, confirmed on v2.1.226.**
+  Reproduced with a minimal debug command via `--plugin-dir` + `-p`: `$1` returned the *second*
+  whitespace-separated token, not the first — reproducible with plain ASCII, so it is not
+  Thai-specific despite first surfacing there. `$ARGUMENTS` was correct in every case. Worked
+  around in `commands/mission.md` by having the model extract the slug from `$ARGUMENTS` itself
+  instead of trusting `$1`. Don't reintroduce `$1` in this repo's commands until upstream fixes
+  it; re-verify with the same kind of debug command before removing this workaround.
 
 ## Conventions
 
