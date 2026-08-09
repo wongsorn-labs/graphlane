@@ -128,4 +128,6 @@ Four principles, in priority order:
   behavioural.
 - Do not commit `.mission/` from your own test runs.
 - Bump `version` in `.claude-plugin/plugin.json` when you ship a behavioural change — installed
-  users only pick up updates once the version moves.
+  users only pick up updates once the version moves. Add a matching entry to `CHANGELOG.md` in
+  the same commit; there is no script that generates or checks this, it is a manual step (see
+  "What this repo is" — no build step, no package manager).
