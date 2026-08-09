@@ -43,6 +43,81 @@ want the audit trail.
 The router creates `.mission/add-2fa/`, then walks the nodes in order. It stops at step 4 and
 waits for you to type `approve` before a single file gets written.
 
+## Worked example
+
+This is a real run, not a mockup — a throwaway repo with one 11-line `cli.py`, no tests, no
+packaging, invoked exactly like this:
+
+```
+/graphlane:mission add-version-flag เพิ่มแฟลก --version ให้ cli.py พิมพ์ 1.0.0 แล้ว exit
+```
+
+Steps 1–3 run (brief → researcher → architect), then it stops at the human checkpoint:
+
+```
+**HUMAN CHECKPOINT**
+
+Step list from plan.md:
+1. cli.py — insert a new branch as the first statement after `args = sys.argv[1:]`, before
+   the existing `if not args:`:
+       if "--version" in args:
+           print("1.0.0")
+           return
+2. cli.py — make no other edits (existing branches, import, __main__ guard stay untouched).
+3. test_cli.py (new file, repo root) — unittest module driving cli.py via subprocess,
+   covering --version, --version combined with other args (both positions), no-args,
+   unknown-args, and --version=2 (should NOT match).
+4. No other file changes.
+
+HIGH-IMPACT section (verbatim):
+> Nothing here touches auth, data deletion, migrations, billing, or a published API...
+> - Deliberate omission of sys.exit()...
+> - --version becomes a reserved token...
+> - New file executes the Python interpreter...
+
+approve / revise / abort?
+```
+
+Typing `approve` runs builder → reviewer and ships:
+
+```
+Mission summary: add-version-flag
+
+Shipped
+- cli.py: added `if "--version" in args: print("1.0.0"); return` as the first check in
+  main(), ahead of the existing no-args branch. No sys.exit(), 3-line diff.
+- test_cli.py (new): 6 stdlib unittest cases — --version alone, combined with other args
+  in both positions, no-args, unknown-args, and --version=2 as a negative case.
+
+Reviewer findings — VERDICT: PASS, no blockers. 4 non-blocking nits: no test pins the
+case-insensitive-alias decision, no test asserts stderr == "", and running the suite
+leaves an untracked __pycache__/ (pre-existing gitignore gap, unrelated to this change).
+
+Still open
+- .mission/ and __pycache__/ are untracked — left out of the commit since they're process
+  artifacts, not the code deliverable.
+```
+
+The staged diff is exactly what the plan promised, nothing more:
+
+```diff
++    if "--version" in args:
++        print("1.0.0")
++        return
+```
+
+The reviewer didn't just re-read the diff — it independently ran the test suite, tried
+adversarial inputs (`--Version`, `--version=`, empty-string args, embedded whitespace), and
+mutation-tested the test suite itself against 11 hand-introduced bugs (killed 7, logged the 4
+survivors as findings instead of hiding them). Full detail lands in `.mission/<slug>/review.md`
+and `artifacts.md`, alongside `brief.md`, `facts.md`, and `plan.md`.
+
+> **A real quirk this run surfaced:** the mission slug came out as `เพิ่มแฟลก` (a Thai word from
+> the goal text) instead of the `add-version-flag` token typed first. `$1`/`$ARGUMENTS`
+> substitution in `commands/mission.md` didn't resolve the way the template implies when invoked
+> non-interactively with mixed Thai/English text. Untested whether this also happens in an
+> interactive session — check before relying on the slug for anything beyond a folder name.
+
 ## How it maps to the graph
 
 | Node | Where it lives | What enforces it |
