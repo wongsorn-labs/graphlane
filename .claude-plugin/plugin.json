@@ -1,7 +1,7 @@
 {
   "name": "graphlane",
-  "description": "Every agent stays in its lane. A fixed research -> design -> human approval -> build -> review pipeline for Claude Code subagents, with shared state on disk and hooks that block instead of hope.",
-  "version": "0.1.0",
+  "description": "Every agent stays in its lane. A fixed research -> design -> human approval -> build -> review pipeline for Claude Code subagents. Installs a hook that blocks `git push` / `npm publish` in every project you use it in.",
+  "version": "0.1.1",
   "author": {
     "name": "wongsorn-labs"
   },

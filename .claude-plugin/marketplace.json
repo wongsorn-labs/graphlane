@@ -11,7 +11,7 @@
     {
       "name": "graphlane",
       "source": "./",
-      "description": "Every agent stays in its lane. A fixed research -> design -> human approval -> build -> review pipeline for Claude Code subagents."
+      "description": "Every agent stays in its lane. A fixed research -> design -> human approval -> build -> review pipeline for Claude Code subagents. Installs a hook that blocks `git push` / `npm publish` in every project you use it in."
     }
   ]
 }

@@ -100,9 +100,12 @@ Four principles, in priority order:
 - **The human checkpoint is soft.** Step 4 of `/graphlane:mission` relies on the model stopping
   when told. The hard version is a `PreToolUse` hook on `Edit|Write` that exits 2 unless
   `.mission/<slug>/APPROVED` exists. Not implemented yet — good first contribution.
-- **`after-edit.sh` ships with guessed commands.** Users must replace them with their real
-  lint/typecheck, in their own clone, before installing — a plugin's files aren't meant to be
-  hand-edited post-install. Document this loudly; do not silently make it a no-op.
+- **`after-edit.sh` ships with guessed commands.** It gates each tool on a real config file
+  (`tsconfig.json`, an ESLint config, `pyproject.toml`/`ruff.toml`) instead of just `package.json`,
+  and prints a one-line notice instead of silently passing when nothing matches — but the
+  commands themselves are still guesses. Users must replace them with their real lint/typecheck,
+  in their own clone, before installing — a plugin's files aren't meant to be hand-edited
+  post-install. Keep the loud no-op notice; do not let this silently become a no-op.
 - **Interactive only.** This is a dev-loop tool. Headless service use needs the Agent SDK, and
   that is out of scope for this repo.
 - No tests for the hook scripts yet.

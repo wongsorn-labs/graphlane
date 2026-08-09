@@ -13,6 +13,13 @@ fixed edges, state on disk, and conditions that are actual shell exit codes.
 
 ## Install
 
+> **Before you install:** the moment graphlane is installed, its `guard-bash.sh` hook blocks
+> `git push` and `npm publish` in **every** project you use Claude Code in — not just the repo
+> you're working on right now. That's deliberate (see "Known limits"), but it's a standing
+> workflow change, not a per-repo opt-in. If you only want that behavior in specific projects,
+> skip `/plugin install` and use `--plugin-dir` per-session instead (below) — it only applies
+> for that one session.
+
 graphlane is a Claude Code plugin. Add this repo as a marketplace, then install the plugin:
 
 ```
@@ -20,7 +27,8 @@ graphlane is a Claude Code plugin. Add this repo as a marketplace, then install 
 /plugin install graphlane@graphlane
 ```
 
-To hack on it locally instead, point Claude Code straight at your clone:
+To hack on it locally, or to scope it to one project instead of installing it globally, point
+Claude Code straight at your clone instead:
 
 ```bash
 git clone https://github.com/wongsorn-labs/graphlane
@@ -29,7 +37,9 @@ claude --plugin-dir ./graphlane
 
 **Required before first use:** edit `scripts/after-edit.sh` (in your clone, before installing —
 plugin files aren't meant to be hand-edited after install) and replace the placeholder commands
-with your project's real lint / typecheck. Shipped as-is it will quietly do nothing.
+with your project's real lint / typecheck. Shipped as-is it detects `tsconfig.json`, an ESLint
+config, or `pyproject.toml`/`ruff.toml` and runs the matching tool — and says so out loud, rather
+than silently passing, when none of those are present.
 
 In the project where you use graphlane, add `.mission/` to `.gitignore` — or commit it if you
 want the audit trail.
@@ -152,8 +162,7 @@ and `artifacts.md`, alongside `brief.md`, `facts.md`, and `plan.md`.
 - Interactive dev-loop tool. For a headless service, use the Agent SDK instead.
 - Start with researcher + builder + reviewer. Add the architect once you notice plans going wrong.
 - As a plugin, `guard-bash.sh` applies to *every* project you install graphlane into, not just
-  this repo. Blocking `git push` / `npm publish` becomes a standing policy the moment you install
-  it — know that before you install it in a project where you don't want that.
+  this repo — see the install-time warning above. `--plugin-dir` scopes it to one session instead.
 
 ## Requirements
 
