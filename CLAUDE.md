@@ -23,11 +23,15 @@ There is no build, lint, or test suite for the repo itself — see "What this re
 The things worth running directly:
 
 ```bash
-# Exercise guard-bash.sh the same way Claude Code's PreToolUse hook does.
+# Run the hook test harness — plain bash assertions against guard-bash.sh and
+# after-edit.sh, no framework. Run this after touching either script.
+scripts/test-hooks.sh
+
+# Exercise guard-bash.sh the same way Claude Code's PreToolUse hook does, ad hoc.
 # It reads {"tool_input":{"command": "..."}} on stdin; exit 2 means blocked.
 echo '{"tool_input":{"command":"git push origin main"}}' | scripts/guard-bash.sh; echo "exit: $?"
 
-# Exercise after-edit.sh the same way the PostToolUse hook does.
+# Exercise after-edit.sh the same way the PostToolUse hook does, ad hoc.
 CLAUDE_PROJECT_DIR="$PWD" scripts/after-edit.sh
 
 # Load the plugin from a local clone without installing it, to test a change in a real project.
@@ -37,10 +41,14 @@ claude --plugin-dir /path/to/graphlane
 claude plugin validate .
 ```
 
-There is no unit-test harness for the hook scripts (see "Known gaps"); the manual commands above
-are the equivalent. The only real end-to-end test is running `/graphlane:mission <slug> <goal>`
-(via `--plugin-dir`) against a throwaway branch of a real project and reading the resulting
-`.mission/<slug>/*.md` files.
+`scripts/test-hooks.sh` covers guard-bash.sh's block/allow patterns (including the documented
+`.env`/`.env.example` substring over-match — that's real behavior, not a test bug) and
+after-edit.sh's config-gating plus its "never blocks" invariant. It has no coverage of the live
+tsc/eslint/ruff-available code paths — those depend on what's installed on the machine running
+it, so they're intentionally left to the ad hoc commands above. There's still no harness for
+`commands/mission.md` or the agent files themselves (see "Known gaps"); the only real end-to-end
+test for those is running `/graphlane:mission <slug> <goal>` (via `--plugin-dir`) against a
+throwaway branch of a real project and reading the resulting `.mission/<slug>/*.md` files.
 
 ## The model
 
@@ -108,7 +116,9 @@ Four principles, in priority order:
   post-install. Keep the loud no-op notice; do not let this silently become a no-op.
 - **Interactive only.** This is a dev-loop tool. Headless service use needs the Agent SDK, and
   that is out of scope for this repo.
-- No tests for the hook scripts yet.
+- `scripts/test-hooks.sh` covers `guard-bash.sh` and `after-edit.sh`. Still no coverage for
+  `commands/mission.md` or the agent files — that stays manual (`--plugin-dir` + a throwaway
+  project) since it needs a real model in the loop, not just exit codes.
 - Not yet submitted to any marketplace beyond its own self-hosted one — installable today only
   via `/plugin marketplace add wongsorn-labs/graphlane` or `--plugin-dir`.
 - **Claude Code's `$1` positional-argument substitution is unreliable, confirmed on v2.1.226.**
@@ -136,6 +146,9 @@ Four principles, in priority order:
 ## Working in this repo
 
 - When changing an agent's behaviour, update `README.md`'s mapping table in the same commit.
+- Run `scripts/test-hooks.sh` after touching `guard-bash.sh` or `after-edit.sh`. A pattern that
+  looks obviously right can still silently stop matching — the harness is what catches that,
+  not re-reading the diff.
 - Test a change with `claude --plugin-dir /path/to/graphlane` in a throwaway project, then run
   `/graphlane:mission` end-to-end. Reading the diff is not enough — the failure modes here are
   behavioural.

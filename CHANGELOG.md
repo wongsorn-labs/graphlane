@@ -6,6 +6,12 @@ All notable changes to graphlane are documented here. Format follows
 
 ## [Unreleased]
 
+### Added
+
+- `scripts/test-hooks.sh` — plain-bash assertion harness for `guard-bash.sh` and
+  `after-edit.sh` (block/allow patterns, config-gating, the "never blocks" invariant for
+  after-edit.sh). No runtime behavior changed, so no version bump — dev tooling only.
+
 ## [0.1.1] - 2026-08-09
 
 ### Added
