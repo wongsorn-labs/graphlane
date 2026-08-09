@@ -1,9 +1,6 @@
-# graphlane
+# CLAUDE.md
 
-A `.claude/` setup that runs Claude Code subagents as a fixed pipeline instead of a free-for-all.
-Tagline: **every agent stays in its lane.**
-
-This file is context for Claude Code. Read it before doing anything in this repo.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## What this repo is
 
@@ -14,6 +11,24 @@ Because of that:
 - Do not add a build step, a package manager, or a runtime dependency.
 - Do not convert the agent definitions into code. They are Markdown on purpose.
 - Anything that only works on the author's machine does not belong here.
+
+## Commands
+
+There is no build, lint, or test suite for the repo itself — see "What this repo is" above.
+The two things worth running directly:
+
+```bash
+# Exercise guard-bash.sh the same way Claude Code's PreToolUse hook does.
+# It reads {"tool_input":{"command": "..."}} on stdin; exit 2 means blocked.
+echo '{"tool_input":{"command":"git push origin main"}}' | .claude/scripts/guard-bash.sh; echo "exit: $?"
+
+# Exercise after-edit.sh the same way the PostToolUse hook does.
+CLAUDE_PROJECT_DIR="$PWD" .claude/scripts/after-edit.sh
+```
+
+There is no unit-test harness for the hook scripts (see "Known gaps"); the commands above are
+the manual equivalent. The only real end-to-end test is running `/mission <slug> <goal>` against
+a throwaway branch of a real project and reading the resulting `.mission/<slug>/*.md` files.
 
 ## The model
 
@@ -27,6 +42,10 @@ Because of that:
          ↓
       human checkpoint → ship
 ```
+
+Wired in `.claude/settings.json`: `PreToolUse` on `Bash` → `scripts/guard-bash.sh` (can block
+the call with exit 2); `PostToolUse` on `Edit|Write` → `scripts/after-edit.sh` (feeds lint/type
+output back to Claude, never blocks).
 
 Four principles, in priority order:
 
