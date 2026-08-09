@@ -112,6 +112,9 @@ Four principles, in priority order:
 ## Conventions
 
 - Agent files: `agents/<role>.md`, frontmatter needs `name`, `description`, `tools`, `model`.
+- Command files: `commands/<name>.md`, frontmatter needs `description`, `argument-hint`,
+  `allowed-tools`. Invoked as `/graphlane:<name>`. Not every command is a graph node —
+  `mission` runs the pipeline, `release` is a maintenance utility for this repo itself.
 - Keep each agent under ~40 lines. If a role needs more, it is probably two roles.
 - Prompts are imperative and negative-first: state what the node must NOT do before what it does.
 - Shell scripts: bash, `set -e` off deliberately (a hook that dies must not block the user),
@@ -129,5 +132,6 @@ Four principles, in priority order:
 - Do not commit `.mission/` from your own test runs.
 - Bump `version` in `.claude-plugin/plugin.json` when you ship a behavioural change — installed
   users only pick up updates once the version moves. Add a matching entry to `CHANGELOG.md` in
-  the same commit; there is no script that generates or checks this, it is a manual step (see
-  "What this repo is" — no build step, no package manager).
+  the same commit. There is no script that generates or checks this (see "What this repo is" —
+  no build step, no package manager); run `/graphlane:release <patch|minor|major> <what changed>`
+  to have Claude Code do both edits for you instead of doing them by hand.
